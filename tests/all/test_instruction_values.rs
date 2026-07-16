@@ -223,17 +223,17 @@ fn test_get_next_use() {
 
     let arg1 = function.get_first_param().unwrap().into_float_value();
 
-    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1"))]
+    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1", feature = "llvm23-1"))]
     let f32_ptr = builder.build_alloca(f32_type, "f32_ptr").unwrap();
-    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1"))]
+    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1", feature = "llvm23-1"))]
     let _ = builder.build_store(f32_ptr, f32_type.const_float(std::f64::consts::PI));
-    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1"))]
+    #[cfg(any(feature = "llvm21-1", feature = "llvm22-1", feature = "llvm23-1"))]
     let f32_val = builder
         .build_load(f32_type, f32_ptr, "f32_val")
         .unwrap()
         .into_float_value();
 
-    #[cfg(not(any(feature = "llvm21-1", feature = "llvm22-1")))]
+    #[cfg(not(any(feature = "llvm21-1", feature = "llvm22-1", feature = "llvm23-1")))]
     let f32_val = f32_type.const_float(std::f64::consts::PI);
 
     let add_pi0 = builder.build_float_add(arg1, f32_val, "add_pi").unwrap();
@@ -346,6 +346,11 @@ fn test_instructions() {
     );
     assert_eq!(free_instruction.get_opcode(), Call);
     assert_eq!(return_instruction.get_opcode(), Return);
+    // LLVM 23 split the `br` opcode into `CondBr`/`UncondBr`.
+    #[cfg(not(feature = "llvm23-1"))]
+    assert_eq!(cond_br_instruction.get_opcode(), Br);
+    #[cfg(feature = "llvm23-1")]
+    assert_eq!(cond_br_instruction.get_opcode(), CondBr);
 
     // test instruction type
     assert_eq!(store_instruction.get_type(), AnyTypeEnum::from(void_type));
@@ -545,7 +550,8 @@ fn test_atomic_ordering_mem_instructions() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     let fence_instruction = builder
         .build_fence(AtomicOrdering::AcquireRelease, true, "fence")
@@ -575,7 +581,8 @@ fn test_atomic_ordering_mem_instructions() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     assert_eq!(
         fence_instruction.get_atomic_ordering().unwrap(),
@@ -614,7 +621,8 @@ fn test_atomic_ordering_mem_instructions() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     {
         assert!(
@@ -1090,6 +1098,51 @@ fn test_instruction_indices() {
     assert_eq!(store_inst.get_indices(), vec![]);
 
     builder.build_return(None).unwrap();
+
+    assert!(module.verify().is_ok());
+}
+
+#[test]
+fn test_branch_opcodes() {
+    // LLVM 23 split the single `br` opcode into `UncondBr` and `CondBr`
+    // (LLVM commit 4fd826d1f9dc). Prior versions expose both as `Br`.
+    let context = Context::create();
+    let module = context.create_module("branch_opcodes");
+    let builder = context.create_builder();
+
+    let void_type = context.void_type();
+    let bool_type = context.bool_type();
+    let function = module.add_function("f", void_type.fn_type(&[], false), None);
+
+    let entry = context.append_basic_block(function, "entry");
+    let then_bb = context.append_basic_block(function, "then");
+    let exit_bb = context.append_basic_block(function, "exit");
+
+    builder.position_at_end(entry);
+    let cond_br = builder
+        .build_conditional_branch(bool_type.const_int(1, false), then_bb, exit_bb)
+        .unwrap();
+
+    builder.position_at_end(then_bb);
+    let uncond_br = builder.build_unconditional_branch(exit_bb).unwrap();
+
+    builder.position_at_end(exit_bb);
+    builder.build_return(None).unwrap();
+
+    #[cfg(not(feature = "llvm23-1"))]
+    {
+        assert_eq!(cond_br.get_opcode(), Br);
+        assert_eq!(uncond_br.get_opcode(), Br);
+    }
+    #[cfg(feature = "llvm23-1")]
+    {
+        assert_eq!(cond_br.get_opcode(), CondBr);
+        assert_eq!(uncond_br.get_opcode(), UncondBr);
+    }
+
+    // `is_conditional` must keep working regardless of how the opcode is spelled.
+    assert_eq!(cond_br.is_conditional(), Ok(true));
+    assert_eq!(uncond_br.is_conditional(), Ok(false));
 
     assert!(module.verify().is_ok());
 }

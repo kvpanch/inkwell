@@ -193,6 +193,7 @@ fn sized_types(global_ctx: &Context) {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     let bf16_type = global_ctx.bf16_type();
     let f32_type = global_ctx.f32_type();
@@ -234,6 +235,7 @@ fn sized_types(global_ctx: &Context) {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     assert!(bf16_type.is_sized());
     assert!(f32_type.is_sized());
@@ -274,6 +276,7 @@ fn sized_types(global_ctx: &Context) {
             feature = "llvm20-1",
             feature = "llvm21-1",
             feature = "llvm22-1",
+            feature = "llvm23-1",
         ))]
         assert!(bf16_type.ptr_type(AddressSpace::default()).is_sized());
         assert!(f32_type.ptr_type(AddressSpace::default()).is_sized());
@@ -307,6 +310,7 @@ fn sized_types(global_ctx: &Context) {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     assert!(bf16_type.array_type(42).is_sized());
     assert!(f32_type.array_type(42).is_sized());
@@ -341,6 +345,7 @@ fn sized_types(global_ctx: &Context) {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     assert!(bf16_type.vec_type(42).is_sized());
     assert!(f32_type.vec_type(42).is_sized());
@@ -362,7 +367,8 @@ fn sized_types(global_ctx: &Context) {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     {
         assert!(bool_type.scalable_vec_type(42).is_sized());
@@ -385,6 +391,7 @@ fn sized_types(global_ctx: &Context) {
             feature = "llvm20-1",
             feature = "llvm21-1",
             feature = "llvm22-1",
+            feature = "llvm23-1",
         ))]
         assert!(bf16_type.scalable_vec_type(42).is_sized());
         assert!(f32_type.scalable_vec_type(42).is_sized());
@@ -431,6 +438,7 @@ fn test_const_zero() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     let bf16_type = context.bf16_type();
     let f32_type = context.f32_type();
@@ -455,7 +463,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     let scalable_vec_type = f64_type.scalable_vec_type(42);
     let array_type = f64_type.array_type(42);
@@ -476,7 +485,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     scalable_vec_type.size_of();
     array_type.size_of();
@@ -497,7 +507,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     scalable_vec_type.get_alignment();
     array_type.get_alignment();
@@ -522,6 +533,7 @@ fn test_const_zero() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     let bf16_zero = bf16_type.const_zero();
     let f32_zero = f32_type.const_zero();
@@ -543,7 +555,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     let scalable_vec_zero = scalable_vec_type.const_zero();
     let array_zero = array_type.const_zero();
@@ -568,6 +581,7 @@ fn test_const_zero() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     assert!(bf16_zero.is_null());
     assert!(f32_zero.is_null());
@@ -589,7 +603,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     assert!(scalable_vec_zero.is_null());
     assert!(array_zero.is_null());
@@ -600,7 +615,26 @@ fn test_const_zero() {
     assert_eq!(i32_zero.print_to_string().to_str(), Ok("i32 0"));
     assert_eq!(i64_zero.print_to_string().to_str(), Ok("i64 0"));
     assert_eq!(i128_zero.print_to_string().to_str(), Ok("i128 0"));
-    assert_eq!(f16_zero.print_to_string().to_str(), Ok("half 0xH0000"));
+    // LLVM 23 changed the AsmWriter to print floating-point literals in decimal
+    // form, dropping the legacy hexadecimal notation (0xH/0xR/0xK/0xL/0xM).
+    // See LLVM commit 41c214f0b115.
+    #[cfg(not(feature = "llvm23-1"))]
+    let (f16_z, bf16_z, f80_z, f128_z, ppc_f128_z) = (
+        "half 0xH0000",
+        "bfloat 0xR0000",
+        "x86_fp80 0xK00000000000000000000",
+        "fp128 0xL00000000000000000000000000000000",
+        "ppc_fp128 0xM00000000000000000000000000000000",
+    );
+    #[cfg(feature = "llvm23-1")]
+    let (f16_z, bf16_z, f80_z, f128_z, ppc_f128_z) = (
+        "half 0.000000e+00",
+        "bfloat 0.000000e+00",
+        "x86_fp80 0.000000e+00",
+        "fp128 0.000000e+00",
+        "ppc_fp128 0.000000e+00",
+    );
+    assert_eq!(f16_zero.print_to_string().to_str(), Ok(f16_z));
     #[cfg(any(
         feature = "llvm11-0",
         feature = "llvm12-0",
@@ -614,22 +648,14 @@ fn test_const_zero() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
-    assert_eq!(bf16_zero.print_to_string().to_str(), Ok("bfloat 0xR0000"));
+    assert_eq!(bf16_zero.print_to_string().to_str(), Ok(bf16_z));
     assert_eq!(f32_zero.print_to_string().to_str(), Ok("float 0.000000e+00"));
     assert_eq!(f64_zero.print_to_string().to_str(), Ok("double 0.000000e+00"));
-    assert_eq!(
-        f80_zero.print_to_string().to_str(),
-        Ok("x86_fp80 0xK00000000000000000000")
-    );
-    assert_eq!(
-        f128_zero.print_to_string().to_str(),
-        Ok("fp128 0xL00000000000000000000000000000000")
-    );
-    assert_eq!(
-        ppc_f128_zero.print_to_string().to_str(),
-        Ok("ppc_fp128 0xM00000000000000000000000000000000")
-    );
+    assert_eq!(f80_zero.print_to_string().to_str(), Ok(f80_z));
+    assert_eq!(f128_zero.print_to_string().to_str(), Ok(f128_z));
+    assert_eq!(ppc_f128_zero.print_to_string().to_str(), Ok(ppc_f128_z));
     assert_eq!(
         struct_zero.print_to_string().to_str(),
         Ok("{ i8, fp128 } zeroinitializer")
@@ -656,7 +682,8 @@ fn test_const_zero() {
         feature = "llvm19-1",
         feature = "llvm20-1",
         feature = "llvm21-1",
-        feature = "llvm22-1"
+        feature = "llvm22-1",
+        feature = "llvm23-1"
     ))]
     assert_eq!(
         scalable_vec_zero.print_to_string().to_str(),
@@ -686,6 +713,7 @@ fn test_float_type() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     let bf16_type = context.bf16_type();
     let f32_type = context.f32_type();
@@ -708,6 +736,7 @@ fn test_float_type() {
         feature = "llvm20-1",
         feature = "llvm21-1",
         feature = "llvm22-1",
+        feature = "llvm23-1",
     ))]
     assert_eq!(bf16_type.get_bit_width(), 16);
     assert_eq!(f32_type.get_bit_width(), 32);
@@ -800,7 +829,8 @@ fn test_basic_type_enum() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         &int.scalable_vec_type(1),
     ];
@@ -869,4 +899,23 @@ fn test_ptr_is_opaque() {
         let ptr_type = context.ptr_type(AddressSpace::default());
         assert!(ptr_type.is_opaque());
     }
+}
+
+/// LLVM 23 introduced a dedicated byte type (`LLVMByteTypeKind`, LLVM commit
+/// 57568c288dbe). inkwell does not yet provide a wrapper for it, so feeding one
+/// through the exhaustive `LLVMTypeKind` match in `AnyTypeEnum::new` is expected
+/// to panic. This test exercises that new match arm.
+#[test]
+#[cfg(feature = "llvm23-1")]
+#[should_panic(expected = "Unsupported type: Byte")]
+fn test_byte_type_is_unsupported() {
+    use inkwell::llvm_sys::core::{LLVMByteTypeInContext, LLVMGetByteTypeWidth};
+    use inkwell::types::AnyTypeEnum;
+
+    let context = Context::create();
+    let byte_type = unsafe { LLVMByteTypeInContext(context.raw(), 8) };
+    assert_eq!(unsafe { LLVMGetByteTypeWidth(byte_type) }, 8);
+
+    // inkwell has no Byte type wrapper, so this must panic.
+    let _ = unsafe { AnyTypeEnum::new(byte_type) };
 }

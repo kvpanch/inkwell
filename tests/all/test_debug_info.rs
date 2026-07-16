@@ -37,7 +37,8 @@ fn test_smoke() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -52,7 +53,8 @@ fn test_smoke() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -126,7 +128,8 @@ fn test_struct_with_placeholders() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -141,7 +144,8 @@ fn test_struct_with_placeholders() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -234,7 +238,8 @@ fn test_no_explicit_finalize() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -249,7 +254,8 @@ fn test_no_explicit_finalize() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -290,7 +296,8 @@ fn test_replacing_placeholder_with_placeholder() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -305,7 +312,8 @@ fn test_replacing_placeholder_with_placeholder() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -360,7 +368,8 @@ fn test_anonymous_basic_type() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -375,7 +384,8 @@ fn test_anonymous_basic_type() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -417,7 +427,8 @@ fn test_global_expressions() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -432,7 +443,8 @@ fn test_global_expressions() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -499,7 +511,8 @@ fn test_pointer_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -514,7 +527,8 @@ fn test_pointer_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -559,7 +573,8 @@ fn test_reference_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -574,7 +589,8 @@ fn test_reference_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -620,7 +636,8 @@ fn test_array_type() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -635,7 +652,8 @@ fn test_array_type() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );
@@ -682,7 +700,8 @@ fn test_enumeration_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
         #[cfg(any(
@@ -697,7 +716,8 @@ fn test_enumeration_types() {
             feature = "llvm19-1",
             feature = "llvm20-1",
             feature = "llvm21-1",
-            feature = "llvm22-1"
+            feature = "llvm22-1",
+            feature = "llvm23-1"
         ))]
         "",
     );

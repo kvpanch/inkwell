@@ -92,7 +92,13 @@ pub enum InstructionOpcode {
     AtomicCmpXchg,
     AtomicRMW,
     BitCast,
+    // LLVM 23 split the `br` opcode into unconditional and conditional variants.
+    #[llvm_versions(..23)]
     Br,
+    #[llvm_versions(23..)]
+    UncondBr,
+    #[llvm_versions(23..)]
+    CondBr,
     Call,
     CallBr,
     CatchPad,
@@ -129,7 +135,7 @@ pub enum InstructionOpcode {
     Or,
     #[llvm_variant(LLVMPHI)]
     Phi,
-    #[cfg(feature = "llvm22-1")]
+    #[cfg(any(feature = "llvm22-1", feature = "llvm23-1"))]
     PtrToAddr,
     PtrToInt,
     Resume,
@@ -277,8 +283,26 @@ impl<'ctx> InstructionValue<'ctx> {
 
     // SubTypes: Only apply to branch instructions
     /// Returns whether the branch instruction is conditional
+    #[llvm_versions(..23)]
     pub fn is_conditional(self) -> Result<bool, InstructionValueError> {
         if self.get_opcode() == InstructionOpcode::Br {
+            Ok(unsafe { LLVMIsConditional(self.as_value_ref()) == 1 })
+        } else {
+            Err(InstructionValueError::NotBrInst)
+        }
+    }
+
+    // SubTypes: Only apply to branch instructions
+    /// Returns whether the branch instruction is conditional
+    ///
+    /// Since LLVM 23 the `br` opcode is split into [`InstructionOpcode::UncondBr`] and
+    /// [`InstructionOpcode::CondBr`], so the answer is derived directly from the opcode.
+    #[llvm_versions(23..)]
+    pub fn is_conditional(self) -> Result<bool, InstructionValueError> {
+        if matches!(
+            self.get_opcode(),
+            InstructionOpcode::UncondBr | InstructionOpcode::CondBr
+        ) {
             Ok(unsafe { LLVMIsConditional(self.as_value_ref()) == 1 })
         } else {
             Err(InstructionValueError::NotBrInst)
@@ -627,7 +651,8 @@ impl<'ctx> InstructionValue<'ctx> {
                 feature = "llvm19-1",
                 feature = "llvm20-1",
                 feature = "llvm21-1",
-                feature = "llvm22-1"
+                feature = "llvm22-1",
+                feature = "llvm23-1"
             ))]
             InstructionOpcode::Fence => Ok(unsafe { LLVMGetOrdering(self.as_value_ref()) }.into()),
             _ => Err(InstructionValueError::NotAtomicOrderingInst),
@@ -659,7 +684,8 @@ impl<'ctx> InstructionValue<'ctx> {
                 feature = "llvm19-1",
                 feature = "llvm20-1",
                 feature = "llvm21-1",
-                feature = "llvm22-1"
+                feature = "llvm22-1",
+                feature = "llvm23-1"
             ))]
             (
                 InstructionOpcode::Fence,
@@ -676,7 +702,8 @@ impl<'ctx> InstructionValue<'ctx> {
                 feature = "llvm19-1",
                 feature = "llvm20-1",
                 feature = "llvm21-1",
-                feature = "llvm22-1"
+                feature = "llvm22-1",
+                feature = "llvm23-1"
             ))]
             (InstructionOpcode::Fence, _) => {
                 Err(InstructionValueError::AtomicError(AtomicError::InvalidOrderingOnFence))
@@ -686,7 +713,8 @@ impl<'ctx> InstructionValue<'ctx> {
                 feature = "llvm19-1",
                 feature = "llvm20-1",
                 feature = "llvm21-1",
-                feature = "llvm22-1"
+                feature = "llvm22-1",
+                feature = "llvm23-1"
             ))]
             (InstructionOpcode::AtomicRMW, AtomicOrdering::NotAtomic | AtomicOrdering::Unordered) => Err(
                 InstructionValueError::AtomicError(AtomicError::InvalidOrderingOnAtomicRMW),
@@ -696,7 +724,8 @@ impl<'ctx> InstructionValue<'ctx> {
                 feature = "llvm19-1",
                 feature = "llvm20-1",
                 feature = "llvm21-1",
-                feature = "llvm22-1"
+                feature = "llvm22-1",
+                feature = "llvm23-1"
             ))]
             (InstructionOpcode::AtomicRMW, _) => {
                 unsafe { LLVMSetOrdering(self.as_value_ref(), ordering.into()) };

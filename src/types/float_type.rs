@@ -238,6 +238,7 @@ impl<'ctx> FloatType<'ctx> {
             feature = "llvm20-1",
             feature = "llvm21-1",
             feature = "llvm22-1",
+            feature = "llvm23-1",
         ),
         deprecated(
             note = "Starting from version 15.0, LLVM doesn't differentiate between pointer types. Use Context::ptr_type instead."
@@ -276,6 +277,7 @@ impl<'ctx> FloatType<'ctx> {
                 feature = "llvm20-1",
                 feature = "llvm21-1",
                 feature = "llvm22-1",
+                feature = "llvm23-1",
             ))]
             llvm_sys::LLVMTypeKind::LLVMBFloatTypeKind => 16,
             llvm_sys::LLVMTypeKind::LLVMFloatTypeKind => 32,

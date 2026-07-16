@@ -66,6 +66,8 @@ pub extern crate llvm_sys_201 as llvm_sys;
 pub extern crate llvm_sys_211 as llvm_sys;
 #[cfg(feature = "llvm22-1")]
 pub extern crate llvm_sys_221 as llvm_sys;
+#[cfg(feature = "llvm23-1")]
+pub extern crate llvm_sys_231 as llvm_sys;
 
 use llvm_sys::target_machine::LLVMCodeGenOptLevel;
 use llvm_sys::{
@@ -121,7 +123,8 @@ assert_unique_used_features! {
     "llvm19-1",
     "llvm20-1",
     "llvm21-1",
-    "llvm22-1"
+    "llvm22-1",
+    "llvm23-1"
 }
 
 #[cfg(all(

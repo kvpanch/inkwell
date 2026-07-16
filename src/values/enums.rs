@@ -100,6 +100,7 @@ impl<'ctx> AnyValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMBFloatTypeKind => AnyValueEnum::FloatValue(FloatValue::new(value)),
                 LLVMTypeKind::LLVMIntegerTypeKind => AnyValueEnum::IntValue(IntValue::new(value)),
@@ -125,6 +126,7 @@ impl<'ctx> AnyValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMScalableVectorTypeKind => {
                     AnyValueEnum::ScalableVectorValue(ScalableVectorValue::new(value))
@@ -305,6 +307,7 @@ impl<'ctx> BasicValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMBFloatTypeKind => BasicValueEnum::FloatValue(FloatValue::new(value)),
                 LLVMTypeKind::LLVMIntegerTypeKind => BasicValueEnum::IntValue(IntValue::new(value)),
@@ -325,6 +328,7 @@ impl<'ctx> BasicValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMScalableVectorTypeKind => {
                     BasicValueEnum::ScalableVectorValue(ScalableVectorValue::new(value))
@@ -522,6 +526,7 @@ impl<'ctx> BasicMetadataValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMBFloatTypeKind => BasicMetadataValueEnum::FloatValue(FloatValue::new(value)),
                 LLVMTypeKind::LLVMIntegerTypeKind => BasicMetadataValueEnum::IntValue(IntValue::new(value)),
@@ -542,6 +547,7 @@ impl<'ctx> BasicMetadataValueEnum<'ctx> {
                     feature = "llvm20-1",
                     feature = "llvm21-1",
                     feature = "llvm22-1",
+                    feature = "llvm23-1",
                 ))]
                 LLVMTypeKind::LLVMScalableVectorTypeKind => {
                     BasicMetadataValueEnum::ScalableVectorValue(ScalableVectorValue::new(value))
